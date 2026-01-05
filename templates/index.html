@@ -1,0 +1,158 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YHC.FIT</title>
+    
+    <!-- Frameworks & Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    
+    <link rel="stylesheet" href="{% static 'css/style2.css' %}">
+</head>
+<body>
+
+    <header class="app-header">
+        <a href="#" class="logo" data-module="home">YHC.FIT</a>
+        <nav class="desktop-nav">
+            <ul class="nav-links">
+                <li class="active" data-module="home"><a href="#">Главная</a></li>
+                <li data-module="plan"><a href="#">Планы</a></li>
+                <li data-module="library"><a href="#">Библиотека</a></li>
+                <li data-module="schedule"><a href="#">Расписание</a></li>
+                <li data-module="profile"><a href="#">Профиль</a></li>
+            </ul>
+        </nav>
+        <button class="mobile-nav-toggle" aria-label="Открыть меню"><i class='bx bx-menu'></i></button>
+    </header>
+
+    <div class="app-container">
+        <main class="main-content">
+            <!-- Динамический контент -->
+        </main>
+    </div>
+    
+    <div class="mobile-nav-overlay">
+        <nav class="mobile-nav">
+            <ul class="mobile-nav-links">
+                <li class="active" data-module="home"><a href="#">Главная</a></li>
+                <li data-module="plan"><a href="#">Планы</a></li>
+                <li data-module="library"><a href="#">Библиотека</a></li>
+                <li data-module="schedule"><a href="#">Расписание</a></li>
+                <li data-module="profile"><a href="#">Профиль</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Модальные окна (Старые + Новое для 1ПМ) -->
+    <div id="plan-modal" class="modal-backdrop"> <div class="modal-content"> <h2 id="modal-title">Создать план</h2> <form id="plan-form"> <input type="hidden" id="plan-id"> <div class="form-group"><label for="plan-name">Название плана</label><input type="text" id="plan-name" required></div> <div id="days-container"></div> <div class="modal-actions"><button type="submit" class="btn btn-primary">Сохранить</button><button type="button" class="btn" name="close-modal">Отмена</button></div> </form> </div> </div>
+    <div id="export-modal" class="modal-backdrop"> <div class="modal-content"> <h2>Код для импорта</h2> <p>Отправьте этот уникальный код другу.</p> <input type="text" id="export-code" readonly> <div class="modal-actions"><button type="button" class="btn btn-primary" id="copy-code-btn">Копировать</button><button type="button" class="btn" name="close-modal">Закрыть</button></div> </div> </div>
+    <div id="import-modal" class="modal-backdrop"> <div class="modal-content"> <h2>Импорт плана</h2> <form id="import-form"> <p>Вставьте уникальный код плана.</p> <input type="text" id="import-code" required placeholder="XXX-XXX-XXX"> <div class="modal-actions"><button type="submit" class="btn btn-primary">Импортировать</button><button type="button" class="btn" name="close-modal">Отмена</button></div> </form> </div> </div>
+    <div id="profile-modal" class="modal-backdrop"> <div class="modal-content"> <h2>Основная информация</h2> <form id="profile-form"> <div class="form-grid"> <div class="form-group"><label for="user-weight">Вес (кг)</label><input type="number" id="user-weight" step="0.1"></div> 
+        <div class="form-group">
+    <label>Пол</label>
+    <!-- Скрытое поле хранит значение для скрипта -->
+    <input type="hidden" id="user-gender">
+    
+    <!-- Визуальный переключатель -->
+    <div class="gender-selector">
+        <button type="button" class="gender-option" data-value="Мужской">Мужской</button>
+        <button type="button" class="gender-option" data-value="Женский">Женский</button>
+    </div>
+</div>
+    </div> <div class="modal-actions"><button type="submit" class="btn btn-primary">Сохранить</button><button type="button" class="btn" name="close-modal">Отмена</button></div> </form> </div> </div>
+    <div id="prs-modal" class="modal-backdrop"> <div class="modal-content"> <h2>Силовые рекорды</h2> <form id="prs-form"> <div class="form-grid"> <div class="form-group"><label for="user-squat">Присед (кг)</label><input type="number" id="user-squat"></div> <div class="form-group"><label for="user-bench">Жим лежа (кг)</label><input type="number" id="user-bench"></div> <div class="form-group"><label for="user-deadlift">Становая тяга (кг)</label><input type="number" id="user-deadlift"></div> </div> <div class="modal-actions"><button type="submit" class="btn btn-primary">Сохранить</button><button type="button" class="btn" name="close-modal">Отмена</button></div> </form> </div> </div>
+    <div id="measurement-modal" class="modal-backdrop"> <div class="modal-content"> <h2>Добавить новые замеры</h2> <form id="measurement-form"> <div class="form-grid"> <div class="form-group"><label for="meas-chest">Грудь (см)</label><input type="number" id="meas-chest" step="0.1"></div> <div class="form-group"><label for="meas-waist">Талия (см)</label><input type="number" id="meas-waist" step="0.1"></div> <div class="form-group"><label for="meas-hips">Бедра (см)</label><input type="number" id="meas-hips" step="0.1"></div> <div class="form-group"><label for="meas-biceps">Бицепс (см)</label><input type="number" id="meas-biceps" step="0.1"></div> </div> <div class="modal-actions"><button type="submit" class="btn btn-primary">Сохранить</button><button type="button" class="btn" name="close-modal">Отмена</button></div> </form> </div> </div>
+    <div id="library-plan-modal" class="modal-backdrop"> <div class="modal-content"> <h2 id="library-plan-title"></h2> <div id="library-plan-details"></div> <div class="modal-actions"><button type="button" class="btn btn-primary" id="add-library-plan-btn">Добавить к себе</button><button type="button" class="btn" name="close-modal">Закрыть</button></div> </div> </div>
+
+    <!-- НОВОЕ: Модальное окно для 1ПМ -->
+    <div id="rm-result-modal" class="modal-backdrop">
+        <div class="modal-content">
+            <div id="rm-result-content"></div>
+            <div class="modal-actions">
+                <button type="button" class="btn" name="close-modal">Закрыть</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Модалка добавления упражнения в текущую тренировку -->
+    <div id="add-exercise-modal" class="modal-backdrop">
+        <div class="modal-content">
+            <h2>Новое упражнение</h2>
+            <form id="new-exercise-form">
+                <div class="form-group">
+                    <label for="new-ex-name">Название упражнения</label>
+                    <input type="text" id="new-ex-name" required placeholder="Например: Сгибания на бицепс" autocomplete="off">
+                </div>
+                <div class="modal-actions">
+                    <button type="submit" class="btn btn-primary">Добавить</button>
+                    <button type="button" class="btn" name="close-modal">Отмена</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модалка подтверждения удаления -->
+    <div id="delete-confirm-modal" class="modal-backdrop">
+        <div class="modal-content" style="max-width: 400px; text-align: center; border-color: var(--danger-color);">
+            <i class='bx bx-error-circle' style="font-size: 4rem; color: var(--danger-color); margin-bottom: 1rem;"></i>
+            <h2 style="margin-bottom: 0.5rem;">Удалить план?</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 2rem;">Это действие нельзя отменить. План будет удален навсегда.</p>
+            
+            <div class="modal-actions" style="justify-content: center; gap: 1rem;">
+                <button type="button" class="btn" name="close-modal" style="flex: 1;">Отмена</button>
+                <button type="button" id="confirm-delete-btn" class="btn btn-danger" style="flex: 1;">Да, удалить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модалка подтверждения сброса старой сессии -->
+    <div id="session-conflict-modal" class="modal-backdrop">
+        <div class="modal-content" style="max-width: 400px; text-align: center; border-color: var(--danger-color);">
+            <div style="margin-bottom: 1.5rem;">
+                <i class='bx bx-error-alt' style="font-size: 4rem; color: var(--danger-color); filter: drop-shadow(0 0 10px var(--danger-color)44);"></i>
+            </div>
+            <h2 style="margin-bottom: 1rem; font-family: var(--font-display); text-transform: uppercase;">Сбросить сессию?</h2>
+            <p style="color: var(--text-secondary); line-height: 1.5; margin-bottom: 2rem;">
+                Данные незавершенной тренировки будут <span style="color: var(--text-primary); font-weight: 700;">безвозвратно удалены</span>. Начать новую запись?
+            </p>
+            
+            <div class="modal-actions" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <button type="button" class="btn" name="close-modal" style="width: 100%;">Отмена</button>
+                <button type="button" id="confirm-discard-session-btn" class="btn btn-danger" style="width: 100%;">Да, удалить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- НОВАЯ МОБИЛЬНАЯ НАВИГАЦИЯ (BOTTOM DOCK) -->
+    <nav class="mobile-bottom-nav">
+        <a href="#" class="nav-item active" data-module="home">
+            <i class='bx bx-home-alt-2'></i>
+            <span>Главная</span>
+        </a>
+        <a href="#" class="nav-item" data-module="plan">
+            <i class='bx bx-dumbbell'></i>
+            <span>Планы</span>
+        </a>
+        <a href="#" class="nav-item" data-module="library">
+            <i class='bx bx-book-bookmark'></i>
+            <span>База</span>
+        </a>
+        <a href="#" class="nav-item" data-module="schedule">
+            <i class='bx bx-calendar'></i>
+            <span>Дневник</span>
+        </a>
+        <a href="#" class="nav-item" data-module="profile">
+            <i class='bx bx-user'></i>
+            <span>Профиль</span>
+        </a>
+    </nav>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{% static 'js/script2.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация | FitApp</title>
+    <link rel="stylesheet" href="{% static 'css/style2.css' %}">
+    <style>
+        .auth-container { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        .auth-card { max-width: 400px; width: 100%; }
+        
+        .auth-header { text-align: center; margin-bottom: 2rem; }
+        .auth-header h1 { font-family: var(--font-display); font-size: 2.5rem; text-transform: uppercase; margin-bottom: 0.5rem; }
+        
+        /* Стилизуем группу поля */
+        .field-group { margin-bottom: 1.2rem; }
+        .field-group label { 
+            display: block; 
+            font-size: 0.7rem; 
+            color: var(--primary-color); 
+            text-transform: uppercase; 
+            font-weight: 900; 
+            letter-spacing: 0.1em;
+            margin-bottom: 8px;
+        }
+        
+        /* Стилизуем сами инпуты, которые генерирует Django */
+        .field-group input {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: #fff;
+            font-family: var(--font-sans);
+            outline: none;
+            transition: 0.3s;
+        }
+        .field-group input:focus {
+            border-color: var(--primary-color);
+            background: #000;
+            box-shadow: 0 0 15px color-mix(in srgb, var(--primary-color), transparent 85%);
+        }
+
+        /* Прячем длинный список стандартных подсказок Django */
+        .helptext, .field-group span { 
+            display: none; 
+        }
+
+        /* Ошибки делаем аккуратными */
+        .errorlist {
+            color: var(--danger-color);
+            font-size: 0.8rem;
+            list-style: none;
+            padding: 0;
+            margin: 5px 0 0 0;
+            font-weight: 700;
+        }
+
+        .btn-auth { width: 100%; margin-top: 1rem; padding: 1.2rem; font-family: var(--font-display); text-transform: uppercase; font-size: 1.1rem;}
+        .auth-footer { margin-top: 1.5rem; text-align: center; font-size: 0.85rem; color: var(--text-secondary); }
+        .auth-footer a { color: var(--primary-color); text-decoration: none; font-weight: 700; }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="card auth-card">
+            <div class="auth-header">
+                <h1>Регистрация</h1>
+                <p style="color: var(--text-secondary); font-size: 0.9rem;">Создай свой цифровой профиль</p>
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+                
+                {% for field in form %}
+                    <div class="field-group">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}
+                            <ul class="errorlist">
+                                {% for error in field.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+                <button type="submit" class="btn btn-primary btn-auth">Начать путь</button>
+            </form>
+
+            <div class="auth-footer">
+                Уже в системе? <a href="{% url 'login' %}">Войти</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
