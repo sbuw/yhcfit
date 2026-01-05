@@ -25,7 +25,14 @@ SECRET_KEY = 'django-insecure-mfd^=!4eeq-&=5cqgkwoy#vul-k6-0$qqgkosfl%629&t*(ew@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['147.78.66.57', '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['147.78.66.57', 'yhcfit.ru', 'www.yhcfit.ru', 'localhost', '127.0.0.1']
+
+CSRF_TRUSTED_ORIGINS = [
+    'http://yhcfit.ru', 
+    'http://www.yhcfit.ru', 
+    'https://yhcfit.ru',
+    'https://www.yhcfit.ru'
+]
 
 
 # Application definition
