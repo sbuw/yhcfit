@@ -13,7 +13,6 @@
         .auth-header { text-align: center; margin-bottom: 2rem; }
         .auth-header h1 { font-family: var(--font-display); font-size: 2.5rem; text-transform: uppercase; margin-bottom: 0.5rem; }
         
-        /* Стилизуем группу поля */
         .field-group { margin-bottom: 1.2rem; }
         .field-group label { 
             display: block; 
@@ -25,7 +24,6 @@
             margin-bottom: 8px;
         }
         
-        /* Стилизуем сами инпуты, которые генерирует Django */
         .field-group input {
             width: 100%;
             padding: 1rem;
@@ -43,12 +41,10 @@
             box-shadow: 0 0 15px color-mix(in srgb, var(--primary-color), transparent 85%);
         }
 
-        /* Прячем длинный список стандартных подсказок Django */
         .helptext, .field-group span { 
             display: none; 
         }
 
-        /* Ошибки делаем аккуратными */
         .errorlist {
             color: var(--danger-color);
             font-size: 0.8rem;

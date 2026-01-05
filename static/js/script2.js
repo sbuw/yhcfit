@@ -16,14 +16,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function checkAccess(moduleName) {
-        // Список закрытых разделов
         const premiumModules = ['home', 'plan', 'library', 'schedule'];
         
-        // Если модуль в списке и подписки нет — блокируем
         if (premiumModules.includes(moduleName)) {
             return userData.is_subscribed;
         }
-        return true; // Остальные (Home, Profile) всегда доступны
+        return true; 
     }
 
     let progressChartInstance = null;
@@ -38,80 +36,39 @@ document.addEventListener('DOMContentLoaded', () => {
     const daysOfWeek = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];
     const monthNames = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
 
-    // --- STATE ---
     let trainingPlans = [], sharedPlans = {}, scheduleNotes = {}, userData = {};
     let workoutHistory = []; 
     let currentWorkoutSession = null;
     let dailyStats = {};
     let timerState = { interval: null, seconds: 0, isRunning: false };
-    let currentScheduleDate = new Date(); // Хранит текущий просматриваемый месяц
+    let currentScheduleDate = new Date(); 
     let planToDeleteId = null;
 
     const defaultUserData = { weight: 85, gender: 'Мужской', prs: { squat: 140, bench: 100, deadlift: 180 }, measurements: [], progress: { labels: ['Янв', 'Фев'], squat: [120, 130], bench: [90, 95], deadlift: [160, 170] }, settings: { accentColor: '#F000B8' } };
-    /*
-    const libraryPlans = [
-        { 
-            name: 'Верх/Низ 4 дня', 
-            type: 'Силовой', 
-            description: 'Классический сплит. Разделение на верхнюю и нижнюю части тела.', 
-            // НОВЫЕ ПОЛЯ:
-            icon: 'bx-dumbbell',    // Имя иконки из Boxicons
-            days: '4 дня',          // Тег длительности
-            level: 'Средний',       // Тег сложности
-            schedule: { 
-                'Понедельник': [ { name: 'Жим лежа', sets: 4, reps: 8, weight: '80' } ],
-                'Вторник': [ { name: 'Приседания', sets: 4, reps: 8, weight: '100' } ]
-            } 
-        },
-        { 
-            name: 'Фулбоди Старт', 
-            type: 'ОФП', 
-            description: 'Идеально для первых месяцев. Проработка всего тела за раз.', 
-            // НОВЫЕ ПОЛЯ:
-            icon: 'bx-body', 
-            days: '3 дня', 
-            level: 'Новичок',
-            schedule: { 
-                'Понедельник': [ { name: 'Приседания с гирей', sets: 3, reps: 12, weight: '16' } ],
-                'Среда': [ { name: 'Отжимания', sets: 3, reps: 'Max', weight: '0' } ]
-            } 
-        },
-        { 
-            name: 'Домашний Воин', 
-            type: 'Кардио', 
-            description: 'Интенсивная тренировка с собственным весом для дома.', 
-            // НОВЫЕ ПОЛЯ:
-            icon: 'bx-home-heart', 
-            days: '5 дней', 
-            level: 'Любой',
-            schedule: {} 
-        }
-    ];
-    */
+    
 
     function formatWeightDisplay(weight) {
-        // Если вес 0, "0" или пустая строка — считаем это собственным весом
         if (weight == 0 || weight === '0' || weight === '') {
             return `<span style="color: var(--primary-color); font-size: 0.9em; display: inline-flex; align-items: center; gap: 4px;">
                 <i class='bx bx-body'></i> Свой вес
             </span>`;
         }
-        // Иначе возвращаем вес + кг
+
         return `<strong>${weight}</strong>кг`;
     }
 
     function showNotification(message, type = 'success') {
-        // Создаем элемент
+        
         const toast = document.createElement('div');
         toast.className = 'toast-notification';
         
-        // Иконка в зависимости от типа
+        
         let icon = 'bx-check-circle';
-        let borderColor = '#22c55e'; // Зеленый
+        let borderColor = '#22c55e'; 
         
         if (type === 'error') {
             icon = 'bx-error-circle';
-            borderColor = '#ef4444'; // Красный
+            borderColor = '#ef4444'; 
             toast.style.borderColor = borderColor;
             toast.style.boxShadow = `0 10px 30px rgba(0,0,0,0.8), 0 0 20px ${borderColor}33`;
         }
@@ -123,35 +80,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.body.appendChild(toast);
 
-        // Анимация появления (небольшая задержка, чтобы CSS сработал)
+        
         requestAnimationFrame(() => {
             toast.classList.add('show');
         });
 
-        // Удаление через 3 секунды
+        
         setTimeout(() => {
             toast.classList.remove('show');
-            // Ждем окончания анимации исчезновения перед удалением из DOM
+            
             setTimeout(() => {
                 toast.remove();
             }, 400);
         }, 3000);
     }
 
-    // --- DATA ---
+    
     function saveAllData() {
-        console.log("saveAllData вызвана (данные теперь в БД, локальное сохранение пропущено)");
+        console.log("hw)");
     }
     
     async function loadAllData() {
         const savedDraft = localStorage.getItem('currentWorkoutSession');
         if (savedDraft) {
             currentWorkoutSession = JSON.parse(savedDraft);
-            console.log("Черновик тренировки восстановлен");
         }
         try {
-            console.log("Начинаю загрузку данных с сервера...");
-
             const userResp = await fetch('/api/user/');
             if (userResp.status === 403 || userResp.status === 401) {
                 window.location.href = '/accounts/login/';
@@ -159,14 +113,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             if (!userResp.ok) throw new Error('Ошибка при загрузке профиля');
             userData = await userResp.json();
-            console.log("Профиль загружен:", userData);
 
             workoutHistory = userData.workoutHistory || [];
 
             const plansResp = await fetch('/api/plans/');
             if (!plansResp.ok) throw new Error('Ошибка при загрузке планов');
             trainingPlans = await plansResp.json();
-            console.log("Планы загружены:", trainingPlans);
 
             sharedPlans = JSON.parse(localStorage.getItem('sharedPlans')) || {};
             
@@ -191,12 +143,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function applyThemeSettings() {
-        // Проверяем: если цвет лежит в корне (от Django) или в settings (старый стиль)
+        
         const color = userData.accentColor || (userData.settings && userData.settings.accentColor);
         
         if (color) {
             document.documentElement.style.setProperty('--primary-color', color);
-            console.log("Акцентный цвет применен:", color);
         }
     }
 
@@ -250,7 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 0);
     }
 
-    // --- RENDER HOME ---
+   
     const renderHome = () => {
         const today = new Date(); const dayName = daysOfWeek[(today.getDay() + 6) % 7]; const activePlan = trainingPlans.find(p => p.active); const workout = activePlan?.schedule?.[dayName] ?? [];
         const todayKey = new Date().toISOString().split('T')[0];
@@ -260,7 +211,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const isToday = sessionDateKey === todayKey;
 
             if (isToday) {
-                // ТРЕНИРОВКА СЕГОДНЯ: Только кнопка "Продолжить"
+                
                 workoutContent = `
                 <div class="card col-span-12 active-workout-card">
                     <h2 class="card-title" style="color: var(--primary-color);">🔥 Тренировка в процессе</h2>
@@ -268,7 +219,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <button class="btn btn-primary" id="continue-workout-btn" style="width: 100%;">Продолжить</button>
                 </div>`;
             } else {
-                // ТРЕНИРОВКА ЗАБЫТА: Даем выбор
+       
                 workoutContent = `
                 <div class="card col-span-12" style="border-color: var(--text-secondary);">
                     <h2 class="card-title">Незавершенная сессия</h2>
@@ -321,7 +272,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return `<h1 class="hero-title"><span>Твой.</span><span>Пик.</span><span class="highlight">Потенциал.</span></h1><div class="grid">${workoutContent}${volumeCard}${timerCard}${rmCard}${broCard}${horoscopeCard}</div>`;
     };
 
-    // --- RENDER PLANS (NEW) ---
+    
     function renderPlan() {
         let html = `<h1 class="page-header">Мои планы</h1>
                     <div class="plan-main-actions">
@@ -332,7 +283,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const activePlan = trainingPlans.find(p => p.active);
         const activeIndex = trainingPlans.findIndex(p => p.active);
 
-        // 1. СНАЧАЛА РИСУЕМ АКТИВНЫЙ ПЛАН (ЕСЛИ ЕСТЬ)
+  
         if (activePlan) {
             const daysCount = Object.keys(activePlan.schedule || {}).length;
             
@@ -353,11 +304,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>`;
         }
 
-        // 2. ЗАТЕМ РИСУЕМ СЕТКУ ОСТАЛЬНЫХ ПЛАНОВ
+       
         html += `<div class="plans-grid">`;
         
         trainingPlans.forEach((plan, index) => {
-            // Пропускаем активный, так как он уже отрисован сверху
+           
             if (plan.active) return;
 
             const daysCount = Object.keys(plan.schedule || {}).length;
@@ -379,9 +330,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>`;
         });
         
-        html += `</div>`; // Закрываем plans-grid
+        html += `</div>`; 
         
-        // Если планов вообще нет
+      
         if (trainingPlans.length === 0) {
             html += `<div class="card col-span-12" style="text-align:center; padding: 3rem; border-style: dashed; opacity: 0.5;"><p>Список планов пуст. Создайте свой первый!</p></div>`;
         }
@@ -389,9 +340,9 @@ document.addEventListener('DOMContentLoaded', () => {
         return html;
     }
 
-    // --- RENDER SCHEDULE ---
+   
     const renderSchedule = () => {
-        // Используем глобальную переменную currentScheduleDate вместо new Date()
+        
         const date = currentScheduleDate; 
         
         const year = date.getFullYear(); 
@@ -400,28 +351,28 @@ document.addEventListener('DOMContentLoaded', () => {
         const firstDay = new Date(year, month, 1); 
         const lastDay = new Date(year, month + 1, 0); 
         
-        // Коррекция дня недели (пн=0, вс=6)
+        
         const firstDayOfWeek = (firstDay.getDay() + 6) % 7; 
         
         const activePlan = trainingPlans.find(p => p.active);
         
-        // Используем правильные сокращения вместо простой обрезки слов
+        
         const dayLabels = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'];
         let calendarGridHTML = dayLabels.map(d => `<div class="calendar-day-name">${d}</div>`).join('');
         
-        // Пустые ячейки до начала месяца
+        
         for (let i = 0; i < firstDayOfWeek; i++) calendarGridHTML += `<div></div>`;
         
-        // Дни месяца
+        
         for (let i = 1; i <= lastDay.getDate(); i++) {
-            // Создаем дату в локальном времени, чтобы избежать сдвигов часовых поясов
+            
             const currentDate = new Date(year, month, i);
-            // Приводим к строке YYYY-MM-DD вручную для надежности
+            
             const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
             
             const dayName = daysOfWeek[(currentDate.getDay() + 6) % 7];
             
-            // Проверки для стилей
+            
             const historyEntry = workoutHistory.find(h => {
                 const hDate = new Date(h.date);
                 return hDate.getFullYear() === year && hDate.getMonth() === month && hDate.getDate() === i;
@@ -480,7 +431,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function showWorkoutForDate(dateStr) {
         const date = new Date(dateStr);
         
-        // ГЕНЕРАЦИЯ ПРАВИЛЬНЫХ КЛЮЧЕЙ (YYYY-MM-DD)
+        
         const toLocalKey = (d) => {
             const offset = d.getTimezoneOffset() * 60000;
             return new Date(d.getTime() - offset).toISOString().split('T')[0];
@@ -490,7 +441,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const todayKey = toLocalKey(new Date());
         const dayName = daysOfWeek[(date.getDay() + 6) % 7];
         
-        // Подсветка в календаре
+        
         document.querySelectorAll('.calendar-date.selected').forEach(el => el.classList.remove('selected'));
         const calendarDates = document.querySelectorAll('.calendar-date');
         calendarDates.forEach(el => {
@@ -503,7 +454,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const detailsContainer = document.getElementById('day-details');
         
-        // Шапка дня
+       
         let html = `
             <div class="day-header-card">
                 <i class='bx bx-calendar day-header-bg-icon'></i>
@@ -511,19 +462,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 <p>${date.toLocaleDateString('ru-RU', {day: 'numeric', month: 'long'})}</p>
             </div>`;
         
-        // Поиск записей в истории
+        
         const historyEntries = workoutHistory.filter(h => {
             return toLocalKey(new Date(h.date)) === dateKey;
         });
         
         if (historyEntries.length > 0) {
-             // ИСТОРИЯ (НОВЫЙ ДИЗАЙН)
+            
              html += `<div class="history-feed">`;
              
              historyEntries.forEach((session, idx) => {
                  const time = new Date(session.date).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
                  
-                 // Подсчет статистики для красоты
+              
                  let totalVol = 0;
                  let totalSets = 0;
                  session.exercises.forEach(ex => {
@@ -533,7 +484,7 @@ document.addEventListener('DOMContentLoaded', () => {
                      });
                  });
 
-                 // Шапка карточки
+             
                  html += `
                  <div class="history-card">
                     <div class="hc-header">
@@ -561,7 +512,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     <div class="hc-exercises-list">`;
 
-                 // Список упражнений
+               
                  session.exercises.forEach(ex => {
                      html += `
                         <div class="hc-exercise-row">
@@ -577,12 +528,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>`;
                  });
 
-                 html += `</div></div>`; // Закрываем list и card
+                 html += `</div></div>`; 
              });
              html += `</div>`;
 
         } else if (dateKey < todayKey) {
-            // ПРОШЛОЕ (ПУСТО)
+            
             html += `
                 <div class="card" style="border-style: dashed; border-color: var(--border-color); background: transparent; opacity: 0.6;">
                     <h3 class="card-title">ИСТОРИЯ ПУСТА</h3>
@@ -590,7 +541,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>`;
 
         } else {
-            // БУДУЩЕЕ ИЛИ СЕГОДНЯ (ПРОСТО ПЛАН, БЕЗ КНОПОК)
+            
             const plan = trainingPlans.find(p=>p.active)?.schedule?.[dayName] || [];
             
             if (plan.length > 0) {
@@ -621,7 +572,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         
-        // Заметки
+        
         const note = scheduleNotes[dateKey] || '';
         html += `
             <div class="card" style="margin-top: 1.5rem;">
@@ -637,11 +588,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateMoodWidget(dateKey) { const widget = document.getElementById('mood-tracker-widget'); if (!widget) return; widget.querySelectorAll('.mood-btn').forEach(btn => btn.classList.remove('active')); if (dailyStats[dateKey] && dailyStats[dateKey].mood) { const btn = widget.querySelector(`.mood-btn[data-mood="${dailyStats[dateKey].mood}"]`); if (btn) btn.classList.add('active'); } widget.dataset.currentDateKey = dateKey; }
 
-    // --- OTHER RENDERERS ---
-    let libraryPlans = []; // создаем переменную
+    
+    let libraryPlans = []; 
 
     async function renderLibrary() {
-        // Если библиотека еще не загружена, грузим
+        
         if (libraryPlans.length === 0) {
             const resp = await fetch('/api/library/');
             libraryPlans = await resp.json();
@@ -693,7 +644,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const colors = ['#F000B8', '#22c55e', '#3b82f6', '#f97316', '#ef4444', '#8b5cf6'];
         const colorSwatches = colors.map(color => {
-            // Получаем текущий цвет либо из корня, либо из дефолта
+            
             const currentAccent = userData.accentColor || '#F000B8';
             const isActive = color.toLowerCase() === currentAccent.toLowerCase();
             
@@ -867,12 +818,11 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Подготовка текста для бегущей строки
-        // Повторяем название плана несколько раз
+        
         const planName = currentWorkoutSession.planName;
-        // Генерируем HTML: Чередуем контурный текст и закрашенный
+        
         const marqueeContent = Array(6).fill(0).map((_, i) => {
-            const isFilled = i % 2 === 1; // Каждое второе слово — цветное
+            const isFilled = i % 2 === 1;
             return `<span class="marquee-text ${isFilled ? 'filled' : ''}">${planName}</span> <span class="marquee-text">•</span>`;
         }).join(' ');
 
@@ -886,7 +836,7 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
         `;
 
-        // Генерация карточек упражнений (твой список)
+        
         currentWorkoutSession.exercises.forEach((ex, index) => {
             const setsDone = ex.performed_sets.length;
             const isStarted = setsDone > 0;
@@ -928,23 +878,22 @@ document.addEventListener('DOMContentLoaded', () => {
         mainContent.innerHTML = content;
     };
 
-    // Функция для имитации живого пульса
+    
     function simulateHeartRate() {
         const bpmElement = document.getElementById('live-bpm');
         if (!bpmElement) return;
 
-        // Если уже запущен интервал, не запускаем новый (можно сохранить ID интервала глобально, если нужно чистить)
-        // Но для простоты сделаем разовый setTimeout цикл
+        
         
         const update = () => {
             const el = document.getElementById('live-bpm');
-            if (!el) return; // Если ушли с экрана, останавливаемся
+            if (!el) return; 
             
-            // Генерируем число от 118 до 132
+            
             const randomBPM = Math.floor(Math.random() * (132 - 118 + 1) + 118);
             el.textContent = randomBPM;
             
-            // Следующее обновление через 1-3 секунды
+            
             setTimeout(update, Math.random() * 2000 + 1000);
         };
         
@@ -952,8 +901,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function startSessionTimer() {
-        // Здесь можно реализовать логику реального таймера от начала тренировки
-        // Для простоты пока оставим заглушку или можно подключить существующий таймер
+        
     }
 
     function renderSubscriptionWall() {
@@ -1005,7 +953,6 @@ document.addEventListener('DOMContentLoaded', () => {
             ? exercise.performed_sets[exercise.performed_sets.length - 1] 
             : { weight: '', reps: '' };
 
-        // Генерируем карточки подходов
         let setsHTML = exercise.performed_sets.map((set, index) => `
             <div class="set-card">
                 <span class="set-card-num">#${index + 1}</span>
@@ -1062,25 +1009,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const modules = { home: renderHome, plan: renderPlan, library: renderLibrary, schedule: renderSchedule, profile: renderProfile, workout: renderWorkoutMode };
     const loadModule = async (moduleName) => {
-        // 1. ПРОВЕРКА ПОДПИСКИ
         if (!checkAccess(moduleName)) {
-            mainContent.innerHTML = renderSubscriptionWall(); // Показываем экран оплаты
+            mainContent.innerHTML = renderSubscriptionWall(); 
             return;
         }
 
-        // 1. Получаем функцию отрисовки из нашего списка модулей
         const renderFn = modules[moduleName];
         if (!renderFn) return;
 
-        // 2. ЖДЕМ (await), пока функция сгенерирует HTML-строку
         const html = await renderFn(); 
         
-        // 3. Только когда строка готова, вставляем её в основной контент
+        
         if (html) {
             mainContent.innerHTML = html;
         }
 
-        // 4. Дополнительная логика для специфических вкладок
+        
         if (moduleName === 'schedule') { 
             findAndSelectNextWorkoutDay(); 
         }
@@ -1089,7 +1033,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // --- HELPERS (Common) ---
+    
     const formatTime = (seconds) => { const m = Math.floor(seconds / 60).toString().padStart(2, '0'); const s = (seconds % 60).toString().padStart(2, '0'); return `${m}:${s}`; };
     const getWeeklyProgress = () => { const today = new Date(); const day = today.getDay() || 7; const monday = new Date(today); monday.setHours(0,0,0,0); monday.setDate(today.getDate() - day + 1); let count = 0; workoutHistory.forEach(w => { const wDate = new Date(w.date); if (wDate >= monday) count++; }); return count; };
     function getDayNameFromElement(element) { const date = new Date(element.dataset.date); return daysOfWeek[(date.getDay() + 6) % 7]; }
@@ -1156,7 +1100,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function openLibraryPlanModal(planIndex) {
         const plan = libraryPlans[planIndex];
         
-        // 1. Заполняем Шапку (Герой)
+        
         const iconClass = plan.icon || 'bx-dumbbell';
         
         const htmlContent = `
@@ -1188,15 +1132,13 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
         `;
 
-        // Вставляем всё это в тело модалки
-        // Обрати внимание: мы заменяем содержимое modal-content, оставляя кнопки actions
-        // Но чтобы не сломать кнопки, мы найдем именно контейнер контента или перезапишем title/details
+       
         
-        // Более безопасный способ для твоей текущей верстки:
-        document.getElementById('library-plan-title').style.display = 'none'; // Скрываем старый заголовок, т.к. он есть в новом HTML
+        
+        document.getElementById('library-plan-title').style.display = 'none';
         document.getElementById('library-plan-details').innerHTML = htmlContent;
 
-        // Привязываем кнопку
+        
         document.getElementById('add-library-plan-btn').dataset.libraryIndex = planIndex;
         
         document.getElementById('library-plan-modal').classList.add('visible');
@@ -1240,7 +1182,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const modal = document.getElementById('plan-modal');
         const contentContainer = modal.querySelector('.modal-content');
         
-        // HTML структура
+        
         contentContainer.innerHTML = `
             <div class="plan-editor-header">
                 <div class="plan-name-group">
@@ -1265,28 +1207,28 @@ document.addEventListener('DOMContentLoaded', () => {
         const tabsContainer = document.getElementById('day-tabs');
         const daysContainer = document.getElementById('days-container');
 
-        // Словарь сокращений
+       
         const shortDays = {
             'Понедельник': 'ПН', 'Вторник': 'ВТ', 'Среда': 'СР',
             'Четверг': 'ЧТ', 'Пятница': 'ПТ', 'Суббота': 'СБ', 'Воскресенье': 'ВС'
         };
 
-        // Генерация
+       
         daysOfWeek.forEach((day, index) => {
             const exercisesForDay = (plan.schedule && plan.schedule[day]) ? plan.schedule[day] : [];
             
-            // 1. Кнопка Таба
+           
             const tabBtn = document.createElement('div');
             tabBtn.className = `day-tab-tech ${index === 0 ? 'active' : ''}`;
             tabBtn.textContent = shortDays[day]; 
             
-            // ВАЖНО: Добавляем data-атрибут, чтобы switchTab знал, какой это день
+           
             tabBtn.dataset.dayFull = day; 
             
             tabBtn.onclick = () => switchTab(day);
             tabsContainer.appendChild(tabBtn);
 
-            // 2. Панель контента
+          
             const contentPane = document.createElement('div');
             contentPane.className = `day-content-pane ${index === 0 ? 'active' : ''}`;
             contentPane.dataset.day = day;
@@ -1304,16 +1246,11 @@ document.addEventListener('DOMContentLoaded', () => {
             daysContainer.appendChild(contentPane);
         });
 
-        // ... (код скролла колесиком и сохранения остается без изменений) ...
-        // Копируем их из предыдущего шага или оставляем как есть, если они работали
-        
-        // Логика сохранения (кратко, чтобы не потерялась)
-        // Внутри openPlanModal, там где навешивается onclick на save-plan-btn:
         document.getElementById('save-plan-btn').onclick = async () => {
             const name = document.getElementById('plan-name').value;
             if(!name) { showNotification('Введите название', 'error'); return; }
             
-            // Собираем расписание из полей модалки (этот код у тебя уже есть)
+           
             const newSchedule = {};
             document.querySelectorAll('.day-content-pane').forEach(pane => {
                 const day = pane.dataset.day;
@@ -1328,9 +1265,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 if(exercises.length > 0) newSchedule[day] = exercises;
             });
 
-            // --- ОТПРАВЛЯЕМ В DJANGO ---
+          
             const payload = {
-                id: planIndex !== null ? trainingPlans[planIndex].id : null, // ID из базы, если редактируем
+                id: planIndex !== null ? trainingPlans[planIndex].id : null, 
                 name: name,
                 schedule: newSchedule
             };
@@ -1343,10 +1280,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 if (response.ok) {
-                    showNotification('План успешно сохранен в базу!');
+                    showNotification('План успешно сохранен!');
                     document.getElementById('plan-modal').classList.remove('visible');
                     
-                    // Перезагружаем данные с сервера и обновляем экран
+               
                     await loadAllData(); 
                     loadModule('plan');
                 }
@@ -1358,11 +1295,11 @@ document.addEventListener('DOMContentLoaded', () => {
         modal.classList.add('visible');
     }
 
-    // Вспомогательная функция переключения табов
+  
     function switchTab(selectedDay) {
-        // 1. Переключаем кнопки (ищем по data-day-full)
+      
         document.querySelectorAll('.day-tab-tech').forEach(btn => {
-            // Если день совпадает — добавляем active, иначе убираем
+           
             if (btn.dataset.dayFull === selectedDay) {
                 btn.classList.add('active');
             } else {
@@ -1370,7 +1307,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
         
-        // 2. Переключаем панели контента
+       
         document.querySelectorAll('.day-content-pane').forEach(pane => {
             if (pane.dataset.day === selectedDay) {
                 pane.classList.add('active');
@@ -1381,14 +1318,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     function openProfileModal() {
-        // Устанавливаем вес
+       
         document.getElementById('user-weight').value = userData.weight;
         
-        // Устанавливаем пол в скрытое поле
+      
         const currentGender = userData.gender || 'Мужской';
         document.getElementById('user-gender').value = currentGender;
 
-        // Визуально активируем нужную кнопку
+       
         document.querySelectorAll('.gender-option').forEach(btn => {
             btn.classList.remove('active');
             if (btn.dataset.value === currentGender) {
@@ -1404,14 +1341,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const progressCtx = document.getElementById('progressChart')?.getContext('2d');
         const measureCtx = document.getElementById('measurementsChart')?.getContext('2d');
 
-        // График силовых (SBD)
+      
         if (progressCtx) {
             if (progressChartInstance) progressChartInstance.destroy();
 
-            // 1. Проверяем, есть ли данные в истории прогресса
+           
             const hasProgressData = userData.progress && userData.progress.labels && userData.progress.labels.length > 0;
 
-            // 2. Если данных нет — рисуем 5 пустых колонок для красоты
+           
             const progressLabels = hasProgressData ? userData.progress.labels : ['', '', '', '', ''];
 
             progressChartInstance = new Chart(progressCtx, {
@@ -1447,14 +1384,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     maintainAspectRatio: false,
                     plugins: { 
                         legend: { 
-                            display: hasProgressData, // Скрываем легенду, если данных нет
+                            display: hasProgressData, 
                             labels: { color: '#737373', font: { family: 'Inter' } } 
                         } 
                     },
                     scales: {
                         y: { 
                             beginAtZero: false,
-                            // Если данных нет — ставим 0-100 для сетки. Если есть — автоподбор.
                             min: hasProgressData ? undefined : 0,
                             max: hasProgressData ? undefined : 100,
                             ticks: { color: '#737373' }, 
@@ -1469,16 +1405,15 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // График антропометрии (Все 4 замера)
         if (measureCtx) {
             if (measureChartInstance) measureChartInstance.destroy();
 
-            // Проверяем, есть ли данные. Если нет — создаем пустые заглушки для сетки
+            
             const hasData = userData.measurements && userData.measurements.length > 0;
             
             const labels = hasData 
                 ? userData.measurements.map(m => m.date) 
-                : ['', '', '', '', '']; // 5 пустых точек для отрисовки сетки
+                : ['', '', '', '', '']; 
 
             const datasets = [
                 { label: 'Грудь', key: 'chest', color: '#F000B8' },
@@ -1490,7 +1425,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 data: hasData ? userData.measurements.map(m => m.measurements[item.key]) : [],
                 borderColor: item.color,
                 tension: 0.3,
-                pointRadius: hasData ? 3 : 0, // Прячем точки, если данных нет
+                pointRadius: hasData ? 3 : 0, 
             }));
 
             measureChartInstance = new Chart(measureCtx, {
@@ -1504,13 +1439,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     maintainAspectRatio: false,
                     plugins: { 
                         legend: { 
-                            display: hasData, // Прячем легенду, если нет данных
+                            display: hasData, 
                             labels: { color: '#737373', font: { family: 'Inter' } } 
                         } 
                     },
                     scales: {
                         y: { 
-                            beginAtZero: false, // Чтобы сетка была красивой
+                            beginAtZero: false, 
                             min: hasData ? undefined : 0,
                             max: hasData ? undefined : 100,
                             ticks: { color: '#737373', stepSize: 20 }, 
@@ -1526,7 +1461,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- EVENTS ---
     const handleNavClick = async (e) => { e.preventDefault(); const target = e.currentTarget; const moduleName = target.dataset.module; if (moduleName) { navLinks.forEach(item => item.classList.toggle('active', item.dataset.module === moduleName)); await loadModule(moduleName); } if (mobileNavOverlay.classList.contains('open')) { mobileNavOverlay.classList.remove('open'); mobileNavToggle.innerHTML = `<i class='bx bx-menu'></i>`; } };
 
     navLinks.forEach(link => { link.addEventListener('click', handleNavClick); });
@@ -1561,9 +1495,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target.closest('#btn-set-bodyweight')) {
             const input = document.getElementById('set-weight');
             if (input) {
-                input.value = '0'; // Ставим ноль
+                input.value = '0'; 
                 
-                // Визуальный эффект (мигание)
+             
                 input.style.backgroundColor = 'var(--primary-color)';
                 input.style.color = '#000';
                 setTimeout(() => {
@@ -1573,12 +1507,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // Удалить упражнение (Tech Style)
+      
         if (target.closest('.btn-tech-remove')) {
             target.closest('.editor-card-tech').remove();
         }
         
-        // Добавить упражнение (Tech Style)
+        
         if (target.closest('.btn-add-tech')) {
             const dayPane = target.closest('.day-content-pane');
             const list = dayPane.querySelector('.exercises-list');
@@ -1586,15 +1520,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (target.closest('#add-exercise-to-session-btn')) {
-            // Очищаем поле ввода перед открытием
             document.getElementById('new-ex-name').value = '';
-            // Открываем модалку
             document.getElementById('add-exercise-modal').classList.add('visible');
-            // Ставим фокус в поле ввода (для удобства)
             setTimeout(() => document.getElementById('new-ex-name').focus(), 100);
         }
         
-        // Добавление упражнения (кнопка внизу списка)
         if (target.closest('.btn-add-exercise-dashed')) {
             const dayPane = target.closest('.day-content-pane');
             const list = dayPane.querySelector('.exercises-list');
@@ -1625,7 +1555,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (target.closest('.color-swatch')) {
             const newColor = target.closest('.color-swatch').dataset.color;
 
-            // 1. Отправляем новый цвет в базу данных Django
             try {
                 const response = await fetch('/api/user/update/', {
                     method: 'POST',
@@ -1634,21 +1563,19 @@ document.addEventListener('DOMContentLoaded', () => {
                         weight: userData.weight,
                         gender: userData.gender,
                         prs: userData.prs,
-                        accentColor: newColor // Отправляем новый выбранный цвет
+                        accentColor: newColor 
                     })
                 });
 
                 if (response.ok) {
-                    // 2. Обновляем локально и применяем
+                    
                     userData.accentColor = newColor;
                     applyThemeSettings();
                     
-                    // Визуально переключаем "активный" кружок
+                    
                     document.querySelectorAll('.color-swatch').forEach(swatch => {
                         swatch.classList.toggle('active', swatch.dataset.color === newColor);
                     });
-
-                    showNotification('Цвет темы сохранен в базе!');
                 }
             } catch (error) {
                 console.error('Ошибка сохранения цвета:', error);
@@ -1656,18 +1583,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (target.id === 'confirm-delete-btn') {
-            if (planToDeleteId !== null) { // Проверяем ID
+            if (planToDeleteId !== null) { 
                 try {
-                    console.log("Отправляю запрос на удаление ID:", planToDeleteId);
                     const response = await fetch(`/api/plans/delete/${planToDeleteId}/`);
 
                     if (response.ok) {
-                        showNotification('План удален из базы');
+                        showNotification('План удален');
                         document.getElementById('delete-confirm-modal').classList.remove('visible');
                         
-                        planToDeleteId = null; // Сбрасываем
-                        await loadAllData();   // Перегружаем список
-                        loadModule('plan');    // Обновляем экран
+                        planToDeleteId = null; 
+                        await loadAllData();   
+                        loadModule('plan');   
                     }
                 } catch (error) {
                     console.error('Ошибка удаления:', error);
@@ -1688,10 +1614,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const r = parseInt(document.getElementById('rm-reps-input').value);
             
             if (w && r) {
-                // Формула Epley
+                
                 const rm = w * (1 + r / 30);
                 
-                // Данные для таблицы (как на скрине)
+                
                 const data = [
                     { p: 100, goal: 'Максимум (1)' },
                     { p: 95,  goal: 'Сила (2-3)' },
@@ -1703,7 +1629,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     { p: 60,  goal: 'Выносливость (15-20+)' }
                 ];
 
-                // Генерация строк таблицы
+                
                 const rows = data.map(item => {
                     const weight = Math.round(rm * (item.p / 100));
                     return `
@@ -1758,7 +1684,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }))
             };
 
-            // СОХРАНЯЕМ В КЭШ
+           
             localStorage.setItem('currentWorkoutSession', JSON.stringify(currentWorkoutSession));
             
             loadModule('workout');
@@ -1767,7 +1693,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (target.closest('[data-module="workout"]')) { loadModule('workout'); }
         if (target.closest('#end-workout-btn')) {
-            // Вместо confirm вызываем экран победы
+            
             showVictoryScreen();
         }
         if (target.closest('.workout-exercise-summary-card')) { mainContent.innerHTML = renderExerciseDetailView(target.closest('.workout-exercise-summary-card').dataset.exerciseName); }
@@ -1843,19 +1769,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (target.closest('button[name="delete-plan"]')) {
             const planIndex = target.closest('button').dataset.planIndex;
-            // Теперь запоминаем именно ID из базы
-            planToDeleteId = trainingPlans[planIndex].id; 
             
-            console.log("Хотим удалить план с ID:", planToDeleteId);
+            planToDeleteId = trainingPlans[planIndex].id; 
             document.getElementById('delete-confirm-modal').classList.add('visible');
         }
 
         const libCard = target.closest('.lib-card-cyber');
         
         if (libCard) {
-            // Получаем индекс плана
+            
             const index = parseInt(libCard.dataset.libraryIndex);
-            // Вызываем функцию открытия модалки (она у тебя уже есть и работает)
+            
             openLibraryPlanModal(index);
         }
 
@@ -1866,30 +1790,24 @@ document.addEventListener('DOMContentLoaded', () => {
             const btn = target.closest('.gender-option');
             const parent = btn.closest('.gender-selector');
             
-            // Убираем активный класс у всех кнопок в этой группе
+            
             parent.querySelectorAll('.gender-option').forEach(b => b.classList.remove('active'));
             
-            // Активируем нажатую
+           
             btn.classList.add('active');
             
-            // Передаем значение в скрытый инпут (чтобы форма могла его сохранить)
+          
             document.getElementById('user-gender').value = btn.dataset.value;
         }
 
-        // Навигация по календарю: Назад
+     
         if (target.closest('#prev-month-btn')) {
-            // Отнимаем 1 месяц. Устанавливаем 1-е число, чтобы избежать багов с 31-м числом
+    
             currentScheduleDate = new Date(currentScheduleDate.getFullYear(), currentScheduleDate.getMonth() - 1, 1);
-            
-            // Перерисовываем ТОЛЬКО календарь (вызывая модуль заново)
             loadModule('schedule');
-            
-            // Не сбрасываем выбранный день (опционально можно выделить 1-е число)
         }
 
-        // Навигация по календарю: Вперед
         if (target.closest('#next-month-btn')) {
-            // Прибавляем 1 месяц
             currentScheduleDate = new Date(currentScheduleDate.getFullYear(), currentScheduleDate.getMonth() + 1, 1);
             loadModule('schedule');
         }
@@ -1897,16 +1815,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const addSetBtn = e.target.closest('.btn-big-add');
 
         if (addSetBtn) {
-            e.preventDefault(); // ОСТАНОВИТЬ перезагрузку страницы
+            e.preventDefault(); 
             
-            // Находим форму, внутри которой лежит кнопка
             const form = addSetBtn.closest('form');
             if (!form) return;
 
-            // Достаем имя упражнения из атрибута формы
             const exerciseName = form.dataset.exerciseName;
 
-            // Находим инпуты по ID
             const weightInput = document.getElementById('set-weight');
             const repsInput = document.getElementById('set-reps');
 
@@ -1915,19 +1830,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 const reps = repsInput.value.trim();
 
                 if (weight && reps) {
-                    // Ищем упражнение в данных
                     const exercise = currentWorkoutSession.exercises.find(ex => ex.name === exerciseName);
                     
                     if (exercise) {
-                        // Добавляем данные
+                        
                         exercise.performed_sets.push({ weight, reps });
                         localStorage.setItem('currentWorkoutSession', JSON.stringify(currentWorkoutSession));
                         saveAllData();
 
-                        // Обновляем экран
+                        
                         mainContent.innerHTML = renderExerciseDetailView(exerciseName);
                         
-                        // Возвращаем курсор в поле повторов
+                        
                         setTimeout(() => {
                             const nextRepInput = document.getElementById('set-reps');
                             if(nextRepInput) nextRepInput.focus();
@@ -1941,10 +1855,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const card = e.target.closest('.workout-card-modern');
         
         if (card) {
-            // Получаем имя упражнения из атрибута карточки
+            
             const exerciseName = card.dataset.exerciseName;
             
-            // Если имя есть — открываем детальный вид
+            
             if (exerciseName) {
                 mainContent.innerHTML = renderExerciseDetailView(exerciseName);
             }
@@ -1960,19 +1874,17 @@ document.addEventListener('DOMContentLoaded', () => {
             const newName = nameInput.value.trim();
 
             if (newName && currentWorkoutSession) {
-                // Добавляем новое упражнение в массив текущей сессии
+                
                 currentWorkoutSession.exercises.push({
                     name: newName,
-                    planned_target: "Добавлено вручную", // Пометка, что это не из плана
+                    planned_target: "Добавлено вручную",
                     performed_sets: []
                 });
                 
                 saveAllData();
                 
-                // Закрываем модалку
                 document.getElementById('add-exercise-modal').classList.remove('visible');
                 
-                // Обновляем экран тренировки (список упражнений)
                 renderWorkoutMode(); 
             }
         });
@@ -1982,14 +1894,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (confirmDeleteBtn) {
         confirmDeleteBtn.addEventListener('click', () => {
             if (planToDeleteIndex !== null) {
-                // Удаляем план из массива
+              
                 trainingPlans.splice(planToDeleteIndex, 1);
                 
-                // Сохраняем и обновляем экран
+            
                 saveAllData();
                 loadModule('plan');
                 
-                // Закрываем модалку и сбрасываем индекс
+             
                 document.getElementById('delete-confirm-modal').classList.remove('visible');
                 planToDeleteIndex = null;
             }
@@ -2010,7 +1922,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const result = await response.json();
         if (result.status === 'success') {
-            // Теперь сохраняем импортированный план в личные планы
+           
             const saveResponse = await fetch('/api/plans/save/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
@@ -2042,9 +1954,9 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Формируем данные для создания ЛИЧНОГО плана на базе библиотечного
+    
         const payload = {
-            id: null, // Обязательно null, чтобы Django создал новую запись, а не перезаписал старую
+            id: null, 
             name: planToAdd.name,
             schedule: planToAdd.schedule
         };
@@ -2057,15 +1969,15 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (response.ok) {
-                showNotification(`План "${planToAdd.name}" добавлен в твой список!`);
+                showNotification(`План "${planToAdd.name}" добавлен!`);
                 
-                // Закрываем модалку
+           
                 document.getElementById('library-plan-modal').classList.remove('visible');
                 
-                // СРАЗУ ПЕРЕЗАГРУЖАЕМ ДАННЫЕ
+          
                 await loadAllData(); 
                 
-                // Перекидываем пользователя на вкладку его планов, чтобы он увидел обновку
+              
                 loadModule('plan'); 
                 navLinks.forEach(item => item.classList.toggle('active', item.dataset.module === 'plan'));
             }
@@ -2078,7 +1990,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function showVictoryScreen() {
         if (!currentWorkoutSession) return;
 
-        // Считаем статистику
+      
         let totalVol = 0;
         let totalSets = 0;
         let totalReps = 0;
@@ -2091,7 +2003,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        // Создаем HTML оверлея
+       
         const overlay = document.createElement('div');
         overlay.className = 'victory-overlay';
         overlay.innerHTML = `
@@ -2123,9 +2035,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.body.appendChild(overlay);
 
-        // Обработка кнопки выхода
+      
         document.getElementById('victory-close-btn').onclick = async () => {
-            // 1. Считаем тоннаж перед отправкой
+           
             let totalVol = 0;
             currentWorkoutSession.exercises.forEach(ex => {
                 ex.performed_sets.forEach(s => {
@@ -2133,7 +2045,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             });
 
-            // 2. Формируем данные для сервера
+            
             const payload = {
                 planName: currentWorkoutSession.planName,
                 exercises: currentWorkoutSession.exercises,
@@ -2148,18 +2060,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 if (response.ok) {
-                    showNotification('Тренировка сохранена!');
                     currentWorkoutSession = null;
                     localStorage.removeItem('currentWorkoutSession');  
                     
-                    // Удаляем оверлей и идем домой
+                   
                     document.querySelector('.victory-overlay').remove();
-                    await loadAllData(); // Обновляем данные (чтобы на главном экране и в календаре всё обновилось)
+                    await loadAllData(); 
                     loadModule('home');
                 }
             } catch (error) {
                 console.error('Ошибка сохранения тренировки:', error);
-                showNotification('Ошибка сохранения сессии', 'error');
+                showNotification('Ошибка сохранения', 'error');
             }
         };
     }
@@ -2167,11 +2078,11 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('profile-form').addEventListener('submit', async (e) => {
         e.preventDefault();
         
-        // 1. Собираем данные из полей
+       
         const newWeight = parseFloat(document.getElementById('user-weight').value);
         const newGender = document.getElementById('user-gender').value;
 
-        // 2. Отправляем на сервер Django
+    
         try {
             const response = await fetch('/api/user/update/', {
                 method: 'POST',
@@ -2179,17 +2090,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({
                     weight: newWeight,
                     gender: newGender,
-                    prs: userData.prs, // отправляем старые рекорды, чтобы не затереть их
+                    prs: userData.prs, 
                     accentColor: userData.accentColor
                 })
             });
 
             if (response.ok) {
-                // 3. Если сервер ответил "ОК", обновляем данные на странице
+              
                 userData.weight = newWeight;
                 userData.gender = newGender;
                 
-                showNotification('Вес и пол сохранены в базу данных!');
                 document.getElementById('profile-modal').classList.remove('visible');
                 loadModule('profile');
             }
@@ -2197,7 +2107,7 @@ document.addEventListener('DOMContentLoaded', () => {
             showNotification('Ошибка при связи с сервером', 'error');
         }
     });
-    // Замена сохранения РЕКОРДОВ (SBD)
+    
     const prsForm = document.getElementById('prs-form');
     if (prsForm) {
         prsForm.addEventListener('submit', async (e) => {
@@ -2222,13 +2132,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 if (response.ok) {
-                    // ОБНОВЛЯЕМ ВСЁ СРАЗУ:
-                    await loadAllData(); // 1. Тянем из БД новые точки для графиков
                     
-                    showNotification('Силовые рекорды обновлены в БД!');
+                    await loadAllData();
+                    
                     document.getElementById('prs-modal').classList.remove('visible');
                     
-                    loadModule('profile'); // 2. Перерисовываем профиль и графики
+                    loadModule('profile'); 
                 }
             } catch (error) {
                 console.error('Ошибка:', error);
@@ -2243,7 +2152,7 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             
             const data = {
-                weight: userData.weight, // берем текущий вес
+                weight: userData.weight, 
                 chest: parseFloat(document.getElementById('meas-chest').value) || 0,
                 waist: parseFloat(document.getElementById('meas-waist').value) || 0,
                 hips: parseFloat(document.getElementById('meas-hips').value) || 0,
@@ -2257,9 +2166,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (response.ok) {
-                showNotification('Замеры тела сохранены!');
                 document.getElementById('measurement-modal').classList.remove('visible');
-                // Перезагружаем все данные, чтобы графики обновились
                 await loadAllData(); 
                 loadModule('profile');
             }
