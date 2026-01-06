@@ -54,7 +54,27 @@ body {
 .hero-title .highlight { color: var(--primary-color); }
 
 .page-header { font-family: var(--font-display); font-size: clamp(2.5rem, 8vw, 4rem); margin-bottom: 3rem; font-weight: 900; }
-.section-title { font-family: var(--font-display); color: var(--text-primary); font-size: 1.5rem; margin-top: 3rem; margin-bottom: 1.5rem; font-weight: 900; }
+.section-title { font-family: var(--font-display);
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    margin-top: 4rem !important;
+    margin-bottom: 1.5rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.05em; 
+}
+
+.mini-stat-box {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 0.8rem;
+    border-radius: 12px;
+    text-align: center;
+}
+.mini-stat-box div {
+    font-weight: 900;
+    font-size: 1.2rem;
+    font-family: var(--font-display);
+}
 
 .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 1.5rem; }
 

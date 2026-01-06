@@ -751,9 +751,7 @@ document.addEventListener('DOMContentLoaded', () => {
              <!-- MEASUREMENTS CARD -->
              <div class="card col-span-8">
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem;">
-                    <!-- GREEN STYLE -->
                     <div class="label-style" style="margin:0;">Антропометрия</div>
-                    <!-- GREEN STYLE (BUTTON) -->
                     <button class="btn" id="add-measurement-btn">+ Обновить</button>
                 </div>
                 
@@ -783,38 +781,18 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
 
         <!-- CHARTS & SETTINGS -->
+        <h2 class="section-title">Аналитика прогресса</h2>
         <div class="grid">
-            <!-- График прогресса -->
             <div class="card col-span-12">
-                <div class="chart-header">
-                    <h3>Прогресс в весах</h3>
-                    <i class='bx bx-line-chart' style="font-size: 1.5rem; color: var(--primary-color);"></i>
-                </div>
+                <div class="chart-header"><h3>Прогресс в весах</h3><i class='bx bx-line-chart' style="color: var(--primary-color);"></i></div>
                 <div class="chart-container" style="height: 300px;">
-                    ${hasProgressData 
-                        ? '<canvas id="progressChart"></canvas>' 
-                        : `<div class="chart-empty-placeholder">
-                            <i class='bx bx-pulse'></i>
-                            <p>История весов пуста. Обновите максимумы, чтобы начать отслеживание.</p>
-                           </div>`
-                    }
+                    ${hasProgressData ? '<canvas id="progressChart"></canvas>' : '<div class="chart-empty-placeholder"><i class="bx bx-pulse"></i><p>Нет данных для графика весов</p></div>'}
                 </div>
             </div>
-
-            <!-- График замеров -->
             <div class="card col-span-12">
-                <div class="chart-header">
-                    <h3>Динамика замеров</h3>
-                    <i class='bx bx-ruler' style="font-size: 1.5rem; color: var(--primary-color);"></i>
-                </div>
+                <div class="chart-header"><h3>Динамика замеров</h3><i class='bx bx-ruler' style="color: var(--primary-color);"></i></div>
                 <div class="chart-container" style="height: 300px;">
-                    ${hasMeasureData 
-                        ? '<canvas id="measurementsChart"></canvas>' 
-                        : `<div class="chart-empty-placeholder">
-                            <i class='bx bx-ruler'></i>
-                            <p>Замеры не найдены. Добавьте свои параметры в разделе "Параметры тела".</p>
-                           </div>`
-                    }
+                    ${hasMeasureData ? '<canvas id="measurementsChart"></canvas>' : '<div class="chart-empty-placeholder"><i class="bx bx-ruler"></i><p>Нет данных для графика замеров</p></div>'}
                 </div>
             </div>
         </div>
