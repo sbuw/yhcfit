@@ -664,7 +664,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const statusText = userData.is_subscribed 
             ? `АКТИВНА ДО ${new Date(userData.subscription_end).toLocaleDateString()}` 
             : 'ДОСТУП ОГРАНИЧЕН';
-
+        
+        const hasProgressData = userData.progress && userData.progress.labels && userData.progress.labels.length > 0;
+        const hasMeasureData = userData.measurements && userData.measurements.length > 0;
+        
         return `
         <h1 class="page-header">Профиль</h1>
         
@@ -780,14 +783,39 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
 
         <!-- CHARTS & SETTINGS -->
-        <div class="grid" style="margin-top: 3rem;">
+        <div class="grid">
+            <!-- График прогресса -->
             <div class="card col-span-12">
-                <div class="chart-header"><h3>Прогресс в весах</h3><i class='bx bx-line-chart' style="font-size: 1.5rem; color: var(--primary-color);"></i></div>
-                <div class="chart-container" style="height: 300px;"><canvas id="progressChart"></canvas></div>
+                <div class="chart-header">
+                    <h3>Прогресс в весах</h3>
+                    <i class='bx bx-line-chart' style="font-size: 1.5rem; color: var(--primary-color);"></i>
+                </div>
+                <div class="chart-container" style="height: 300px;">
+                    ${hasProgressData 
+                        ? '<canvas id="progressChart"></canvas>' 
+                        : `<div class="chart-empty-placeholder">
+                            <i class='bx bx-pulse'></i>
+                            <p>История весов пуста. Обновите максимумы, чтобы начать отслеживание.</p>
+                           </div>`
+                    }
+                </div>
             </div>
+
+            <!-- График замеров -->
             <div class="card col-span-12">
-                <div class="chart-header"><h3>Динамика замеров</h3><i class='bx bx-ruler' style="font-size: 1.5rem; color: var(--text-secondary);"></i></div>
-                <div class="chart-container" style="height: 300px;"><canvas id="measurementsChart"></canvas></div>
+                <div class="chart-header">
+                    <h3>Динамика замеров</h3>
+                    <i class='bx bx-ruler' style="font-size: 1.5rem; color: var(--primary-color);"></i>
+                </div>
+                <div class="chart-container" style="height: 300px;">
+                    ${hasMeasureData 
+                        ? '<canvas id="measurementsChart"></canvas>' 
+                        : `<div class="chart-empty-placeholder">
+                            <i class='bx bx-ruler'></i>
+                            <p>Замеры не найдены. Добавьте свои параметры в разделе "Параметры тела".</p>
+                           </div>`
+                    }
+                </div>
             </div>
         </div>
         <h2 class="section-title" style="margin-top: 3rem;">Система</h2>
@@ -1011,6 +1039,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const loadModule = async (moduleName) => {
         if (!checkAccess(moduleName)) {
             mainContent.innerHTML = renderSubscriptionWall(); 
+            window.scrollTo(0, 0);
             return;
         }
 
@@ -1022,6 +1051,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (html) {
             mainContent.innerHTML = html;
+            window.scrollTo(0, 0);
         }
 
         
@@ -1338,11 +1368,12 @@ document.addEventListener('DOMContentLoaded', () => {
     function openPrsModal() { document.getElementById('user-squat').value = userData.prs.squat; document.getElementById('user-bench').value = userData.prs.bench; document.getElementById('user-deadlift').value = userData.prs.deadlift; document.getElementById('prs-modal').classList.add('visible'); }
 
     function renderProfileCharts() {
-        const progressCtx = document.getElementById('progressChart')?.getContext('2d');
-        const measureCtx = document.getElementById('measurementsChart')?.getContext('2d');
+        const progressCtx = document.getElementById('progressChart');
+        const measureCtx = document.getElementById('measurementsChart');
 
       
         if (progressCtx) {
+            const progressCtx = progressCanvas.getContext('2d');
             if (progressChartInstance) progressChartInstance.destroy();
 
            
@@ -1406,6 +1437,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (measureCtx) {
+            const measureCtx = measureCanvas.getContext('2d');
             if (measureChartInstance) measureChartInstance.destroy();
 
             

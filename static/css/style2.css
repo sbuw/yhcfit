@@ -1165,6 +1165,36 @@ body {
     background: linear-gradient(145deg, var(--card-color), color-mix(in srgb, var(--primary-color), transparent 95%));
 }
 
+.chart-empty-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+    border: 1px dashed var(--border-color);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.02);
+    color: var(--text-secondary);
+    text-align: center;
+    padding: 2rem;
+}
+
+.chart-empty-placeholder i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.3;
+}
+
+.chart-empty-placeholder p {
+    font-size: 0.9rem;
+    max-width: 250px;
+    line-height: 1.5;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+}
+
 .wc-header {
     display: flex;
     justify-content: space-between;
@@ -2096,7 +2126,9 @@ body {
 
 .lib-preview-tags {
     display: flex;
-    gap: 0.5rem;
+    flex-wrap: wrap; /* Позволяет тегам прыгать на новую строку */
+    gap: 8px;
+    margin-top: 10px;
 }
 
 .lib-p-tag {
@@ -2148,22 +2180,34 @@ body {
 .lib-ex-item {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    font-size: 0.9rem;
+    align-items: flex-start;
+    gap: 15px; 
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+
+.lib-ex-item:last-child {
+    border-bottom: none;
 }
 
 .lib-ex-name {
+    flex: 1;
     font-weight: 600;
     color: var(--text-primary);
+    line-height: 1.3;
+    word-break: break-word; 
 }
 
 .lib-ex-stats {
-    font-family: var(--font-display);
-    font-size: 0.85rem;
-    color: var(--text-secondary);
+    flex-shrink: 0;
     background: rgba(255,255,255,0.05);
-    padding: 2px 8px;
-    border-radius: 6px;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-family: var(--font-display);
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    white-space: nowrap; 
+    align-self: flex-start; 
 }
 
 .toast-notification {
@@ -2907,6 +2951,17 @@ body::-webkit-scrollbar, .modal-content::-webkit-scrollbar { width: 8px; } body:
     .rm-table th:nth-child(1), .rm-table td:nth-child(1) { width: 15%; }
     .rm-table th:nth-child(2), .rm-table td:nth-child(2) { width: 20%; text-align: center; }
     .rm-table th:nth-child(3), .rm-table td:nth-child(3) { width: 65%; text-align: right; }
+
+    #library-plan-modal .modal-content {
+        padding: 1.5rem;
+        width: 95%;
+    }
+    
+    .lib-preview-hero {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
 
     .profile-hero {
         flex-direction: column !important;
