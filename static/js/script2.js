@@ -205,6 +205,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const renderHome = () => {
         const today = new Date(); const dayName = daysOfWeek[(today.getDay() + 6) % 7]; const activePlan = trainingPlans.find(p => p.active); const workout = activePlan?.schedule?.[dayName] ?? [];
         const todayKey = new Date().toISOString().split('T')[0];
+
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        const timeStr = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+
         let workoutContent = '';
         if (currentWorkoutSession) {
             const sessionDateKey = currentWorkoutSession.date.split('T')[0];
@@ -269,7 +274,37 @@ document.addEventListener('DOMContentLoaded', () => {
         const broCard = `<div class="card col-span-6 bro-quote-card"><h2 class="card-title" style="color: #fff;">Бро Саенс</h2><p class="bro-quote-text">"${getBroQuote()}"</p></div>`;
 
         const horoscopeCard = `<div class="card col-span-12"><i class='bx bx-star bento-icon'></i><h2 class="card-title">Гороскоп</h2><p class="horoscope-text">${getHoroscope()}</p></div>`;
-        return `<h1 class="hero-title"><span>Твой.</span><span>Пик.</span><span class="highlight">Потенциал.</span></h1><div class="grid">${workoutContent}${volumeCard}${timerCard}${rmCard}${broCard}${horoscopeCard}</div>`;
+
+        return `
+        <div class="home-hero-compact">
+            <div class="hero-status-line">
+                <span class="status-badge"><span class="status-dot"></span> SYSTEM_ACTIVE</span>
+                <span class="hero-version">V.1.0.8_ALPHA</span>
+            </div>
+            
+            <h1 class="hero-main-title">YHC // <span class="highlight">CORE_LOG</span></h1>
+            
+            <div class="hero-data-row">
+                <div class="data-item">
+                    <span class="data-label">TIMESTAMP</span>
+                    <span class="data-value">${dateStr} // ${timeStr}</span>
+                </div>
+                <div class="data-item">
+                    <span class="data-label">OPERATOR</span>
+                    <span class="data-value">${userData.username || 'ADMIN'}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid">
+            ${workoutContent}
+            ${volumeCard}
+            ${timerCard}
+            ${rmCard}
+            ${broCard}
+            ${horoscopeCard}
+        </div>
+        `;
     };
 
     
