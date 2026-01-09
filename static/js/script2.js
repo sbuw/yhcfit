@@ -101,10 +101,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     async function loadAllData() {
+        const loader = document.getElementById('system-loader');
+    
         const savedDraft = localStorage.getItem('currentWorkoutSession');
         if (savedDraft) {
             currentWorkoutSession = JSON.parse(savedDraft);
         }
+
         try {
             const userResp = await fetch('/api/user/');
             if (userResp.status === 403 || userResp.status === 401) {
@@ -121,9 +124,9 @@ document.addEventListener('DOMContentLoaded', () => {
             trainingPlans = await plansResp.json();
 
             sharedPlans = JSON.parse(localStorage.getItem('sharedPlans')) || {};
-            
-            scheduleNotes = {}; 
-            dailyStats = {}; 
+
+            scheduleNotes = {};
+            dailyStats = {};
             if (userData.dailyEntries) {
                 for (const [date, val] of Object.entries(userData.dailyEntries)) {
                     scheduleNotes[date] = val.note;
@@ -132,13 +135,21 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             applyThemeSettings();
-            
+
             const activeNav = document.querySelector('.nav-item.active, .nav-links li.active');
             const moduleName = activeNav ? activeNav.dataset.module : 'home';
-            loadModule(moduleName);
+
+            await loadModule(moduleName);
+
+            setTimeout(() => {
+                if (loader) loader.classList.add('hidden');
+            }, 500);
 
         } catch (err) {
             console.error("Ошибка загрузки:", err);
+            if (loader) {
+                loader.innerHTML = `<div style="color:var(--danger-color); font-family:var(--font-display);">SYSTEM_ERROR: CONNECTION_FAILED</div>`;
+            }
         }
     }
 
@@ -279,7 +290,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="home-hero-compact">
             <div class="hero-status-line">
                 <span class="status-badge"><span class="status-dot"></span> SYSTEM_ACTIVE</span>
-                <span class="hero-version">V.1.0.8_ALPHA</span>
+                <span class="hero-version">V.1.0.1</span>
             </div>
             
             <h1 class="hero-main-title">YHC // <span class="highlight">CORE_LOG</span></h1>

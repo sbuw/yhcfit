@@ -3,12 +3,16 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+from django.utils import timezone
+from datetime import timedelta
+
 import uuid
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
-        UserProfile.objects.create(user=instance)
+        trial_end = timezone.now().date() + timedelta(days=14)
+        UserProfile.objects.create(user=instance, subscription_end=trial_end)
 
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
@@ -22,18 +26,16 @@ class UserProfile(models.Model):
     ]
     
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
-    weight = models.FloatField(default=85.0)
+    weight = models.FloatField(default=0.0)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default='M')
     
-    # Силовые рекорды (SBD) храним отдельными числами для графиков
     squat_pr = models.IntegerField(default=0)
     bench_pr = models.IntegerField(default=0)
     deadlift_pr = models.IntegerField(default=0)
     
-    # Настройки интерфейса
     accent_color = models.CharField(max_length=20, default='#F000B8')
 
-    subscription_end = models.DateField(null=True, blank=True) # Дата конца подписки
+    subscription_end = models.DateField(null=True, blank=True)
 
     @property
     def is_subscribed(self):
@@ -51,7 +53,6 @@ class TrainingPlan(models.Model):
     name = models.CharField(max_length=100)
     is_active = models.BooleanField(default=False)
     
-    # Тот самый JSONField для гибкого расписания (дни, упражнения, подходы)
     schedule = models.JSONField(default=dict)
     
     created_at = models.DateTimeField(auto_now_add=True)
@@ -65,11 +66,9 @@ class WorkoutHistory(models.Model):
     date = models.DateTimeField(auto_now_add=True)
     plan_name = models.CharField(max_length=100)
     
-    # Сохраненный результат тренировки (какие веса реально поднял)
-    # Сюда пишем массив упражнений из JS-сессии
     session_data = models.JSONField(default=list)
     
-    total_volume = models.FloatField(default=0) # Тоннаж для быстрой статистики
+    total_volume = models.FloatField(default=0)
 
     def __str__(self):
         return f"{self.plan_name} - {self.date.strftime('%d.%m.%Y')}"
@@ -101,12 +100,12 @@ class PowerliftingProgress(models.Model):
 class DailyEntry(models.Model):
     """Заметки и настроение на конкретную дату"""
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    date = models.DateField() # Дата (без времени)
+    date = models.DateField()
     mood = models.CharField(max_length=20, blank=True, null=True)
     note = models.TextField(blank=True, null=True)
 
     class Meta:
-        unique_together = ('user', 'date') # Чтобы не было двух записей на один день
+        unique_together = ('user', 'date')
 
     def __str__(self):
         return f"{self.date} - {self.user.username}"
@@ -126,7 +125,6 @@ class LibraryPlan(models.Model):
 
 class SharedPlan(models.Model):
     """Планы, которыми поделились пользователи"""
-    # Создаем короткий уникальный код (например, 8 символов)
     code = models.CharField(max_length=12, unique=True)
     name = models.CharField(max_length=100)
     schedule = models.JSONField()
