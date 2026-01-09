@@ -69,6 +69,10 @@ body {
     padding: 0.8rem;
     border-radius: 12px;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border: 1px solid var(--border-color);
 }
 .mini-stat-box div {
     font-weight: 900;
@@ -2278,6 +2282,21 @@ body {
         bottom: 110px;
         width: 90%; 
         justify-content: center;
+    }
+}
+
+.measurements-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 колонки на ПК */
+    gap: 1rem;
+    width: 100%;
+}
+
+/* Адаптив для телефонов */
+@media (max-width: 600px) {
+    .measurements-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2 колонки на мобилках */
+        gap: 0.8rem;
     }
 }
 

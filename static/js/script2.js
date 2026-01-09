@@ -755,26 +755,22 @@ document.addEventListener('DOMContentLoaded', () => {
                     <button class="btn" id="add-measurement-btn">+ Обновить</button>
                 </div>
                 
-                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; text-align: center;">
-                    <div style="background: rgba(255,255,255,0.03); padding: 0.8rem; border-radius: 12px;">
-                        <!-- GREEN STYLE -->
-                        <span class="label-style" style="font-size: 0.7rem; margin-bottom: 4px;">Грудь</span>
-                        <div style="font-weight: 900; font-size: 1.2rem; font-family: var(--font-display);">${latestMeasurement.chest || '-'}</div>
+                <div class="measurements-grid">
+                    <div class="mini-stat-box">
+                        <span class="label-style" style="font-size: 0.6rem;">Грудь</span>
+                        <div>${userData.measurements.length > 0 ? userData.measurements[userData.measurements.length-1].measurements.chest : '-'}</div>
                     </div>
-                    <div style="background: rgba(255,255,255,0.03); padding: 0.8rem; border-radius: 12px;">
-                        <!-- GREEN STYLE -->
-                        <span class="label-style" style="font-size: 0.7rem; margin-bottom: 4px;">Талия</span>
-                        <div style="font-weight: 900; font-size: 1.2rem; font-family: var(--font-display);">${latestMeasurement.waist || '-'}</div>
+                    <div class="mini-stat-box">
+                        <span class="label-style" style="font-size: 0.6rem;">Талия</span>
+                        <div>${userData.measurements.length > 0 ? userData.measurements[userData.measurements.length-1].measurements.waist : '-'}</div>
                     </div>
-                    <div style="background: rgba(255,255,255,0.03); padding: 0.8rem; border-radius: 12px;">
-                        <!-- GREEN STYLE -->
-                        <span class="label-style" style="font-size: 0.7rem; margin-bottom: 4px;">Бедра</span>
-                        <div style="font-weight: 900; font-size: 1.2rem; font-family: var(--font-display);">${latestMeasurement.hips || '-'}</div>
+                    <div class="mini-stat-box">
+                        <span class="label-style" style="font-size: 0.6rem;">Бедра</span>
+                        <div>${userData.measurements.length > 0 ? userData.measurements[userData.measurements.length-1].measurements.hips : '-'}</div>
                     </div>
-                    <div style="background: rgba(255,255,255,0.03); padding: 0.8rem; border-radius: 12px;">
-                        <!-- GREEN STYLE -->
-                        <span class="label-style" style="font-size: 0.7rem; margin-bottom: 4px;">Бицепс</span>
-                        <div style="font-weight: 900; font-size: 1.2rem; font-family: var(--font-display);">${latestMeasurement.biceps || '-'}</div>
+                    <div class="mini-stat-box">
+                        <span class="label-style" style="font-size: 0.6rem;">Бицепс</span>
+                        <div>${userData.measurements.length > 0 ? userData.measurements[userData.measurements.length-1].measurements.biceps : '-'}</div>
                     </div>
                 </div>
             </div>
