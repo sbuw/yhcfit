@@ -165,31 +165,33 @@ document.addEventListener('DOMContentLoaded', () => {
     function createModernExerciseHTML(name = '', sets = '', reps = '', weight = '') {
         return `
         <div class="editor-card-tech">
-            <!-- Название упражнения сверху -->
+            <!-- Название упражнения -->
             <div class="tech-name-input-group">
                 <label>Упражнение</label>
                 <input type="text" class="tech-input inp-name" value="${name}" placeholder="Название...">
             </div>
             
-            <!-- Параметры в один ряд снизу -->
+            <!-- Параметры (один ряд) -->
             <div class="tech-stats-row">
-                <div class="tech-input-group">
+                <div class="tech-stat-column">
                     <label>Подх.</label>
                     <input type="number" class="tech-input inp-sets" value="${sets}" placeholder="0">
                 </div>
-                <div class="tech-input-group">
+                <div class="tech-stat-column">
                     <label>Повт.</label>
                     <input type="text" class="tech-input inp-reps" value="${reps}" placeholder="0">
                 </div>
-                <div class="tech-input-group">
+                <div class="tech-stat-column">
                     <label>КГ</label>
                     <input type="text" class="tech-input inp-weight" value="${weight}" placeholder="0">
                 </div>
                 
-                <!-- Кнопка удаления в конце ряда -->
-                <button type="button" class="btn-tech-remove" title="Удалить">
-                    <i class='bx bx-x'></i>
-                </button>
+                <!-- Кнопка удаления -->
+                <div class="tech-stat-column" style="justify-content: flex-end;">
+                    <button type="button" class="btn-tech-remove">
+                        <i class='bx bx-x'></i>
+                    </button>
+                </div>
             </div>
         </div>`;
     }
