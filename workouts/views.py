@@ -19,7 +19,7 @@ def register(request):
         form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            login(request, user) # Сразу логиним после регистрации
+            login(request, user)
             return redirect('index')
     else:
         form = UserCreationForm()

@@ -165,34 +165,21 @@ document.addEventListener('DOMContentLoaded', () => {
     function createModernExerciseHTML(name = '', sets = '', reps = '', weight = '') {
         return `
         <div class="editor-card-tech">
-            <div class="tech-inputs-grid">
-                <!-- Название -->
+            <div class="tech-inputs-grid" style="display: grid; grid-template-columns: 1fr 50px 50px 60px 35px; gap: 10px; align-items: center;">
+                <!-- Название (1fr - заберет всё свободное место) -->
                 <div class="tech-input-group">
                     <label>Упражнение</label>
-                    <input type="text" class="tech-input inp-name" value="${name}" placeholder="Название...">
+                    <input type="text" class="tech-input inp-name" value="${name}" placeholder="...">
                 </div>
                 
-                <!-- Подходы -->
-                <div class="tech-input-group">
-                    <label>Подх.</label>
-                    <input type="number" class="tech-input inp-sets" value="${sets}" placeholder="3">
-                </div>
-                
-                <!-- Повторы -->
-                <div class="tech-input-group">
-                    <label>Повт.</label>
-                    <input type="text" class="tech-input inp-reps" value="${reps}" placeholder="10">
-                </div>
-                
-                <!-- Вес -->
-                <div class="tech-input-group">
-                    <label>КГ</label>
-                    <input type="text" class="tech-input inp-weight" value="${weight}" placeholder="0">
-                </div>
+                <!-- Остальные инпуты с фиксированной шириной -->
+                <div class="tech-input-group"><label>П</label><input type="number" class="tech-input inp-sets" value="${sets}"></div>
+                <div class="tech-input-group"><label>Р</label><input type="text" class="tech-input inp-reps" value="${reps}"></div>
+                <div class="tech-input-group"><label>КГ</label><input type="text" class="tech-input inp-weight" value="${weight}"></div>
 
-                <!-- Удалить -->
-                <button type="button" class="btn-tech-remove" title="Удалить">
-                    <i class='bx bx-x' style="font-size: 1.5rem;"></i>
+                <!-- Кнопка удаления (теперь всегда в конце и не прыгает) -->
+                <button type="button" class="btn-tech-remove">
+                    <i class='bx bx-x'></i>
                 </button>
             </div>
         </div>`;
